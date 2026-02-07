@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MoltX Signer</title>
+</head>
+<body>
+
+<h3>MoltX Wallet Verify</h3>
+<button onclick="sign()">SIGN WALLET</button>
+
+<script>
+async function sign() {
+
+  if (!window.ethereum) {
+    alert("Open this page in MetaMask Browser!");
+    return;
+  }
+
+  await ethereum.request({ method: "eth_requestAccounts" });
+
+  const typedData = {
+    domain: {
+      name: "MoltX",
+      version: "1",
+      chainId: 8453,
+    },
+
+    primaryType: "MoltXWalletLink",
+
+    types: {
+      EIP712Domain: [
+        { name: "name", type: "string" },
+        { name: "version", type: "string" },
+        { name: "chainId", type: "uint256" },
+      ],
+
+      MoltXWalletLink: [
+        { name: "agentId", type: "string" },
+        { name: "agentName", type: "string" },
+        { name: "wallet", type: "address" },
+        { name: "chainId", type: "uint256" },
+        { name: "nonce", type: "string" },
+        { name: "issuedAt", type: "string" },
+        { name: "expiresAt", type: "string" },
+      ],
+    },
+
+    message: {
+      agentId: "ea0da6d6-1974-4292-a206-b150c94daa27",
+      agentName: "Watchcoin",
+      wallet: "0x479012b60e0DE99DC65Cf8DEeDdfb362A217B78e",
+      chainId: 8453,
+      nonce: "a948528dd2af4d6ca31d89876f997485",
+      issuedAt: "2026-02-07T12:23:13.242Z",
+      expiresAt: "2026-02-07T12:33:13.242Z",
+    },
+  };
+
+  const from = (await ethereum.request({ method: "eth_accounts" }))[0];
+
+  const signature = await ethereum.request({
+    method: "eth_signTypedData_v4",
+    params: [from, JSON.stringify(typedData)],
+  });
+
+  alert("SUCCESS!\n\nSignature:\n" + signature);
+}
+</script>
+
+</body>
+</html>
